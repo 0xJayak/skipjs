@@ -1,6 +1,7 @@
 import fetch from 'node-fetch-commonjs'
 import { sha256, Secp256k1 } from '@cosmjs/crypto'
 import { encodeSecp256k1Signature } from "@cosmjs/amino"
+import { parse } from 'path'
 
 export class SkipBundleClient {
   private sentinelRPCEndpoint: string
@@ -31,7 +32,15 @@ export class SkipBundleClient {
       body: JSON.stringify(data)
     })
 
-    return response.json()
+    let parsedResponse: unknown;
+    try {
+      parsedResponse = await response.json(); 
+    } catch (e) {
+      console.log("exception: ${e}, response: ${parsedResponse}");
+      parsedResponse = "";
+    }
+
+    return parsedResponse
   }
 
   public async signBundle(transactions: string[], privKey: Uint8Array): Promise<SignedBundle> {
